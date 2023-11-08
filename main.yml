@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    labels:
+      - "prometheus.enable=true"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus:/etc/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    labels:
+      - "prometheus.enable=true"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    labels:
+      - "prometheus.enable=true"
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    ports:
+      - 9100:9100
+
+  cadvisor:
+    image: google/cadvisor:latest
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 8080:8080
+    labels:
+      - "prometheus.enable=true"
